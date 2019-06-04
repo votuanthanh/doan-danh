@@ -2,6 +2,11 @@ var express = require('express');
 var app = express();
 var firebase = require('firebase');
 var bodyParser = require('body-parser');
+var mqtt = require('mqtt')
+var client1  = mqtt.connect('mqtt://test.mosquitto.org')
+var client2  = mqtt.connect('mqtt://test.mosquitto.org')
+var client3  = mqtt.connect('mqtt://test.mosquitto.org')
+
 app.set('view engine', 'ejs');
 
 // app.use(bodyParser.json()); 
@@ -19,59 +24,41 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-// app.get('/', function (req, res) {
-//   res.render('index', {is_open: '', error: null});
-// })
+client1.on('connect', function () {
+  client1.subscribe('switch')
+})
 
-app.get('/', function (req, res) {
-
+client1.on('message', function (topic, message) {
+  var is_open = message.toString();
+  console.log(is_open);
   var referencePath = '/is_open';
   var userReference = firebase.database().ref(referencePath);
+  userReference.update({is_open: is_open});
+})
 
-  userReference.on("value", 
-    function(snapshot) {
-      console.log(snapshot.val())
-      res.render('index', {is_open: snapshot.val().is_open, error: null});
-      userReference.off("value");
-    }, 
-    function (errorObject) {
-      res.render('index', {is_open: 'null', error: 'Error, please try again'});
-    });
-});
+client2.on('connect', function () {
+  client2.subscribe('temperature')
+})
 
-//Update instance
-app.put('/', function (req, res) {
-
-  var is_open = req.body.is_open;
-  var referencePath = '/is_open';
+client2.on('message', function (topic, message) {
+  var temperature = message.toString();
+  console.log(temperature);
+  var referencePath = '/temperature';
   var userReference = firebase.database().ref(referencePath);
-  userReference.set({is_open: is_open}, 
-    function(error) {
-    if (error) {
-      res.send("Data could not be saved." + error);
-    } 
-    else {
-      res.send({is_open: 1});
-    }
-  });
-});
+  userReference.set({temperature});
+})
 
-//Update instance
-app.post('/', function (req, res) {
-  var is_open = req.body.is_open;
-  var referencePath = '/is_open';
+client3.on('connect', function () {
+  client3.subscribe('humidity')
+})
+
+client3.on('message', function (topic, message) {
+  var humidity = message.toString()
+  console.log(humidity)
+  var referencePath = '/humidity'
   var userReference = firebase.database().ref(referencePath);
-
-  userReference.update({is_open: is_open}, 
-    function(error) {
-    if (error) {
-      res.send("Data could not be saved." + error);
-    } 
-    else {
-      res.send({is_open: is_open});
-    }
-  });
-});
+  userReference.set({humidity});
+})
 
 var server = app.listen(8080, function () {
 

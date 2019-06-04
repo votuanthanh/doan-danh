@@ -5,6 +5,7 @@
     <title>Test</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>
+    <script src="https://www.gstatic.com/firebasejs/5.2.0/firebase.js"></script>
     <style>
       .switch {
         position: relative;
@@ -94,12 +95,44 @@
             <% if(error !== null){ %>
               <p><%= error %></p>
             <% } %>
+            <p>Current temperature is : <span id="temperature"></span> <span> C</span></p>
+            <p>Current humidity is :<span id="humidity"></span> <span> %</span></p>
           </fieldset>
       </div>
     </div>
   </body>
 
   <script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAPoSYgDMbvrLfilUgCMA_S9ZDj3ncYJ44",
+    authDomain: "do-an-2811d.firebaseapp.com",
+    databaseURL: "https://do-an-2811d.firebaseio.com",
+    projectId: "do-an-2811d",
+    storageBucket: "do-an-2811d.appspot.com",
+    messagingSenderId: "280062861198",
+    appId: "1:280062861198:web:e461b67491e2e604"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+
+  var referencePath = '/is_open';
+  var userReference = firebase.database().ref(referencePath);
+  userReference.on("value", function(snapshot){
+    $('#is_open').text(snapshot.val().is_open)
+  });
+
+  var referencePath = '/temperature';
+  var userReference = firebase.database().ref(referencePath);
+  userReference.on("value", function(snapshot){
+    $('#temperature').text(snapshot.val().temperature)
+  });
+
+  var referencePath = '/humidity';
+  var userReference = firebase.database().ref(referencePath);
+  userReference.on("value", function(snapshot){
+    $('#humidity').text(snapshot.val().humidity)
+  });
+
   $('input[name=checkbox]').change(function(){
     var url = 'http://localhost:8080';
 
