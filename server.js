@@ -60,6 +60,22 @@ client3.on('message', function (topic, message) {
   userReference.set({humidity});
 })
 
+app.get('/', function (req, res) {
+
+  var referencePath = '/is_open';
+  var userReference = firebase.database().ref(referencePath);
+
+  userReference.on("value", 
+    function(snapshot) {
+      console.log(snapshot.val())
+      res.render('index', {is_open: snapshot.val().is_open, error: null});
+      userReference.off("value");
+    }, 
+    function (errorObject) {
+      res.render('index', {is_open: 'null', error: 'Error, please try again'});
+    });
+});
+
 var server = app.listen(8080, function () {
 
   var host = server.address().address;

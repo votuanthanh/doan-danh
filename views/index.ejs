@@ -77,27 +77,12 @@
   </head>
   <body>
     <div class="container ">
-      <div class="wrapper">
-          <fieldset>
-            <label class="switch">
-              <% if(is_open !== null ){ %>
-                <% if(is_open == 1 ){ %>
-                  <input type="checkbox" name="checkbox" checked>
-                <% } else { %>
-                  <input type="checkbox" name="checkbox" >
-                <% } %>
-                <span class="slider round"></span>
-              <% } %>
-            </label>
-            <% if(is_open !== null){ %>
-              <p id="is_open"><%= is_open %></p>
-            <% } %>
-            <% if(error !== null){ %>
-              <p><%= error %></p>
-            <% } %>
+      <div class="wrapper"></div>
+
+            <p id="is_open"><%= is_open %></p>
             <p>Current temperature is : <span id="temperature"></span> <span> C</span></p>
             <p>Current humidity is :<span id="humidity"></span> <span> %</span></p>
-          </fieldset>
+
       </div>
     </div>
   </body>
@@ -131,32 +116,6 @@
   var userReference = firebase.database().ref(referencePath);
   userReference.on("value", function(snapshot){
     $('#humidity').text(snapshot.val().humidity)
-  });
-
-  $('input[name=checkbox]').change(function(){
-    var url = 'http://localhost:8080';
-
-    if($(this).is(':checked')) {
-      $.ajax({
-        type: "POST",
-        url: url,
-        data: {is_open: 1},
-        success: function(data) {
-          $('#is_open').text(data.is_open)
-          console.log(data)
-        }
-      });
-    } else {
-      $.ajax({
-        type: "POST",
-        url: url,
-        data: {is_open: 0},
-        success: function(data) {
-          $('#is_open').text(data.is_open)
-          console.log(data)
-        }
-      });
-    }
   });
   </script>
 </html>
